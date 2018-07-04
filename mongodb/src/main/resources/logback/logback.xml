@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="false" scanPeriod="60 seconds">
+    
+    <property name="logMaxHistory" value="10" />
+ 
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+             <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} -%X{guid} -%10t %5level %-40.40logger{39} [%4line] : %msg%n%ex{full}</pattern>
+        </encoder>   
+    </appender>
+ 
+    <appender name="TRAN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/data/logs/${server.name}/tran.log</file>
+        <!--  FileSize & timeBased , TimeBasedTriggeringPolicy) -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/logs/${server.name}/bak/tran.%d{yyyy-MM-dd_HH}.%i.log</fileNamePattern>
+            <maxHistory>${logMaxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>[%date{yyyy-MM-dd HH:mm:ss.SSS}][%X{guid}][%t][%-5level][%class{1}.%method][%line] : %msg%n%ex{short}</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/data/logs/${server.name}/error.log</file>
+        <!--  FileSize & timeBased , TimeBasedTriggeringPolicy) -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/logs/${server.name}/bak/error.%d{yyyy-MM-dd_HH}.%i.log</fileNamePattern>
+            <maxHistory>${logMaxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>200MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>[%date{yyyy-MM-dd HH:mm:ss.SSS}][%X{guid}][%t][%-5level][%class{1}.%method][%line] : %msg%n%ex{full}</pattern>
+        </encoder>
+    </appender>
+                
+    <logger name="framexpert.run" level="INFO"/>
+    
+    <logger name="kr.ap" level="INFO">
+    </logger>
+
+    <logger name="org.springframework.jdbc" level="INFO" />
+    
+    <logger name="org.springframework.context.annotation" level="INFO" />
+    
+    <logger name="org.springframework.transaction" level="INFO" />
+    
+    <logger name="org.apache.http" level="INFO" />
+
+    <logger name="LOGSTASH" level="WARN" />
+     <!--  SQL logging -->
+    <logger name="org.springframework.jdbc.core.StatementCreatorUtils"  level="INFO" />
+    <logger name="java.sql" level="error" />
+    <logger name="jdbc.sqlonly" level="error" />
+    <logger name="jdbc.sqltiming" level="INFO" />
+    <logger name="jdbc.audit" level="error" />
+    <logger name="jdbc.resultset" level="error" />
+        
+    <logger name="framexpert.run.oltp.ext.integration.transformer.ExceptionMessageTransformer" additivity="false" level="ERROR" >
+        <appender-ref ref="ERROR_LOG"/>
+    </logger> 
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="TRAN_LOG" />
+        <appender-ref ref="ERROR_LOG" /> 
+    </root>
+ 
+</configuration>
